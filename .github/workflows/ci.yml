@@ -55,10 +55,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # [추가된 부분] 대문자 아이디를 소문자로 바꿔서 환경변수에 저장
+      - name: 소문자로 변환 (Lowercase Repo Name)
+        run: |
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: 도커 이미지 빌드 및 푸시
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          # 이미지 이름: ghcr.io/내아이디/저장소이름:latest
-          tags: ghcr.io/${{ github.repository }}:latest
+          # [변경된 부분] github.repository 대신 env.IMAGE_NAME 사용
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
